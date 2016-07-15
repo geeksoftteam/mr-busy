@@ -17,18 +17,15 @@ defmodule MrBusy do
   end
 
   def handle_event({level, _gl, {Logger, msg, ts, mdata}}, state) do
-    IO.puts "metadata: #{inspect mdata}"
+    config = get_config
     # message = Logger.Formatter.format(config[:format], level, msg, ts, mdata)
     event = %{
       time: timestamp(ts),
       level: level,
-      # message: to_string(message),
-      # metadata: metadata(mdata, config),
-              # message: Logger.Formatter.format(level, msg, timestamp, metadata),
-              # metadata: metadata,
-      # metadata: metadata,
+      metadata: metadata(mdata, config),
+      message: (Logger.Formatter.format(config[:format], level, msg, ts, mdata) |> to_string),
     } |> Poison.encode!
-    IO.puts "event:: "
+
     IO.puts(event)
     {:ok, state}
   end
@@ -39,6 +36,7 @@ defmodule MrBusy do
       |> Keyword.merge(opts)
 
     fmt_string = Keyword.get(cnf, :format, "$message")
+
     Keyword.put(cnf, :format, Logger.Formatter.compile(fmt_string))
   end
 
@@ -56,6 +54,6 @@ defmodule MrBusy do
 
   defp metadata(data, config) do
     keys = Keyword.get(config, :metadata, [])
-    Keyword.take(data, keys)
+    Keyword.take(data, keys) |> Enum.into(%{})
   end
 end
