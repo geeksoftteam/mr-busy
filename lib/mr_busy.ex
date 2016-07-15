@@ -2,12 +2,10 @@ defmodule MrBusy do
   use GenEvent
 
   def init(__MODULE__) do
-    IO.puts "initing"
     {:ok, %{config: get_config}}
   end
 
   def handle_call({:configure, options}, state) do
-    IO.puts "configuring"
     {:ok, %{state | config: get_config(options)}}
   end
 
@@ -16,9 +14,8 @@ defmodule MrBusy do
     {:ok, state}
   end
 
-  def handle_event({level, _gl, {Logger, msg, ts, mdata}}, state) do
-    config = get_config
-    # message = Logger.Formatter.format(config[:format], level, msg, ts, mdata)
+  def handle_event({level, _gl, {Logger, msg, ts, mdata}}, %{config: config} = state) do
+    # IO.puts "the format and output: #{inspect fmt} :: #{inspect output} :: #{inspect state}"
     event = %{
       time: timestamp(ts),
       level: level,
@@ -26,7 +23,10 @@ defmodule MrBusy do
       message: (Logger.Formatter.format(config[:format], level, msg, ts, mdata) |> to_string),
     } |> Poison.encode!
 
-    IO.puts(event)
+    if config[:output] == :console do
+      IO.puts(event)
+    end
+
     {:ok, state}
   end
 
@@ -36,8 +36,11 @@ defmodule MrBusy do
       |> Keyword.merge(opts)
 
     fmt_string = Keyword.get(cnf, :format, "$message")
+    output     = Keyword.get(cnf, :output, :console)
 
-    Keyword.put(cnf, :format, Logger.Formatter.compile(fmt_string))
+    cnf
+    |> Keyword.put(:format, Logger.Formatter.compile(fmt_string))
+    |> Keyword.put(:output, output)
   end
 
   defp timestamp({{y, m, d},{h, mn, s, ms}}) do
