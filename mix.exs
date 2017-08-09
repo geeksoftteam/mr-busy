@@ -14,7 +14,7 @@ defmodule MrBusy.Mixfile do
 
   defp deps do
     [
-      {:poison, "~> 2.0"},
+      {:poison, "~> 2.2 or ~> 3.0"},
     ]
   end
 end
