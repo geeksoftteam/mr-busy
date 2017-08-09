@@ -1,5 +1,5 @@
 defmodule MrBusy do
-  use GenEvent
+  @behaviour :gen_event
 
   def init(__MODULE__) do
     {:ok, %{config: get_config()}}
@@ -28,6 +28,14 @@ defmodule MrBusy do
     end
 
     {:ok, state}
+  end
+
+  def code_change(_old_vsn, state, _extra) do
+    {:ok, state}
+  end
+
+  def terminate(_reason, _state) do
+    :ok
   end
 
   defp get_config(opts \\ []) do
