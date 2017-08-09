@@ -3,9 +3,9 @@ defmodule MrBusy.Mixfile do
 
   def project do
     [app: :mr_busy,
-     version: "0.0.1",
-     elixir: "~> 1.3.1",
-     deps: deps]
+     version: "1.0.0",
+     elixir: "~> 1.3",
+     deps: deps()]
   end
 
   def application do

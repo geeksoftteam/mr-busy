@@ -2,7 +2,7 @@ defmodule MrBusy do
   use GenEvent
 
   def init(__MODULE__) do
-    {:ok, %{config: get_config}}
+    {:ok, %{config: get_config()}}
   end
 
   def handle_call({:configure, options}, state) do
