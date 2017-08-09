@@ -30,6 +30,15 @@ defmodule MrBusy do
     {:ok, state}
   end
 
+  def handle_event(:flush, state) do
+    # nothing to flush
+    {:ok, state}
+  end
+
+  def handle_event(_, state) do
+   {:ok, state}
+  end
+
   def code_change(_old_vsn, state, _extra) do
     {:ok, state}
   end
